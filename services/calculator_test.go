@@ -1,22 +1,20 @@
 package services
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestCalculatorAdd_Success(t *testing.T) {
 	cal := &Calculator{
 		Num1: 6,
 		Num2: 1,
 	}
-
-	expected := 7
+	var expected float64 = 7
 	actual, err := cal.Add()
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
-
-	if *actual != float64(expected) {
-		t.Errorf("Expected: %v", expected)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, *actual)
 }
 
 func TestCalculatorAdd_Fail(t *testing.T) {
@@ -24,16 +22,10 @@ func TestCalculatorAdd_Fail(t *testing.T) {
 		Num1: 6,
 		Num2: 1,
 	}
-
-	expected := 5
+	var expected float64 = 5
 	actual, err := cal.Add()
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
-
-	if *actual == float64(expected) {
-		t.Errorf("Expected: %v", expected)
-	}
+	assert.NoError(t, err)
+	assert.NotEqual(t, expected, *actual)
 }
 
 func TestCalculatorSub_Success(t *testing.T) {
@@ -41,16 +33,10 @@ func TestCalculatorSub_Success(t *testing.T) {
 		Num1: 10,
 		Num2: 5,
 	}
-
-	expected := 5
+	var expected float64 = 5
 	actual, err := cal.Sub()
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
-
-	if *actual != float64(expected) {
-		t.Errorf("Expected: %v", expected)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, expected, *actual)
 }
 
 func TestCalculatorSub_Fail(t *testing.T) {
@@ -59,13 +45,8 @@ func TestCalculatorSub_Fail(t *testing.T) {
 		Num2: 1,
 	}
 
-	expected := 10
+	var expected float64 = 10
 	actual, err := cal.Sub()
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
-
-	if *actual == float64(expected) {
-		t.Errorf("Expected: %v", expected)
-	}
+	assert.NoError(t, err)
+	assert.NotEqual(t, expected, *actual)
 }
