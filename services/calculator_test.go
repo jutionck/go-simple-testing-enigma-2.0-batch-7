@@ -4,49 +4,78 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
 )
 
-func TestCalculatorAdd_Success(t *testing.T) {
-	cal := &Calculator{
-		Num1: 6,
-		Num2: 1,
-	}
-	var expected float64 = 7
-	actual, err := cal.Add()
-	assert.Nil(t, err)
-	assert.Equal(t, expected, *actual)
+// pembuatan calculator mock -> untuk mock service
+type CalCulatorMock struct {
+	mock.Mock
 }
 
-func TestCalculatorAdd_Fail(t *testing.T) {
-	cal := &Calculator{
-		Num1: 6,
-		Num2: 1,
+func (c *CalCulatorMock) Add() (*float64, error) {
+	args := c.Called()
+	if args.Get(1) != nil {
+		return nil, args.Error(1)
 	}
-	var expected float64 = 5
-	actual, err := cal.Add()
-	assert.NoError(t, err)
-	assert.NotEqual(t, expected, *actual)
+	return args.Get(0).(*float64), nil
 }
 
-func TestCalculatorSub_Success(t *testing.T) {
-	cal := &Calculator{
-		Num1: 10,
-		Num2: 5,
+func (c *CalCulatorMock) Sub() (*float64, error) {
+	args := c.Called()
+	if args.Get(1) != nil {
+		return nil, args.Error(1)
 	}
-	var expected float64 = 5
-	actual, err := cal.Sub()
-	assert.Nil(t, err)
-	assert.Equal(t, expected, *actual)
+	return args.Get(0).(*float64), nil
 }
 
-func TestCalculatorSub_Fail(t *testing.T) {
-	cal := &Calculator{
-		Num1: 6,
+// pembuatan struct calculator suite untuk kebutuhan pembuatan test case
+type CalculatorTestSuite struct {
+	suite.Suite
+	calculator Calculator
+	calMock *CalCulatorMock
+}
+
+// SetupTest() => untuk melakuakn setup test case
+func (suite *CalculatorTestSuite) SetupTest() {
+	suite.calMock = new(CalCulatorMock)
+	suite.calculator = Calculator{
+		Num1: 7,
 		Num2: 1,
 	}
+}
 
-	var expected float64 = 10
-	actual, err := cal.Sub()
-	assert.NoError(t, err)
-	assert.NotEqual(t, expected, *actual)
+func (suite *CalculatorTestSuite) TestCalculatorAdd_Success() {
+	expected := 8.0
+	suite.calMock.On("Add").Return(&expected, nil)
+	actual, err := suite.calculator.Add()
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), expected, *actual)
+}
+
+func (suite *CalculatorTestSuite) TestCalculatorAdd_Fail() {
+	expected := 10.0
+	suite.calMock.On("Add").Return(&expected, nil)
+	_, err := suite.calculator.Add()
+	assert.Nil(suite.T(), err)
+}
+
+func (suite *CalculatorTestSuite) TestCalculatorSub_Success() {
+	expected := 6.0
+	suite.calMock.On("Add").Return(&expected, nil)
+	actual, err := suite.calculator.Sub()
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), expected, *actual)
+}
+
+func (suite *CalculatorTestSuite) TestCalculatorSub_Fail() {
+	expected := 10.0
+	suite.calMock.On("Add").Return(&expected, nil)
+	_, err := suite.calculator.Sub()
+	assert.Nil(suite.T(), err)
+}
+
+// untuk running test case yang dibuat (diatas)
+func TestCalculatorTestSuite(t *testing.T) {
+	suite.Run(t, new(CalculatorTestSuite))
 }
